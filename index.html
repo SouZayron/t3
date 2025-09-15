@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Thay — Onepage Cute</title>
+  <!-- Fonte Lobster -->
+  <link href="https://fonts.googleapis.com/css2?family=Lobster&display=swap" rel="stylesheet">
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    html,body{height:100%}
+    body{
+      background: url('https://xatimg.com/image/XSyK8eQCK8q6.png') center/cover no-repeat fixed;
+      font-family: Inter, system-ui, Arial;
+      overflow:hidden;
+      color:#fff;
+    }
+
+    .stage{
+      position:relative;
+      width:100vw;
+      height:100vh;
+      z-index:1;
+    }
+
+    .layer{
+      position:absolute;
+      top:50%;
+      left:50%;
+      transform:translate(-50%,-50%);
+      transition:transform .2s ease-out;
+      will-change:transform;
+      pointer-events:none;
+    }
+
+    #coracao{ z-index:1; width:160vmin; max-width:1800px; opacity:0.9; }
+    #urso { z-index:2; width:60vmin; max-width:700px; }
+    #nome   { z-index:3; pointer-events:auto; font-family:'Lobster',cursive;
+              font-size:clamp(192px,16vmin,280px); color:#ff2b2b;
+              text-shadow:0 0 20px rgba(120,0,0,0.9),0 0 50px rgba(255,0,0,0.7);
+              animation: floaty 4s ease-in-out infinite alternate; }
+
+    /* ID agora independente, fácil de mover */
+    #id     { position:absolute; z-index:4; font-weight:700;
+              font-size:36px; color:#fff; cursor:pointer;
+              left:55%; top:40%; transform:translateX(-50%);
+              animation: floatyId 4s ease-in-out infinite alternate; }
+
+    @keyframes floaty {
+      0% { transform: translate(-50%, -50%) translateY(0); }
+      50% { transform: translate(-50%, -50%) translateY(-20px); }
+      100% { transform: translate(-50%, -50%) translateY(0); }
+    }
+    @keyframes floatyId {
+      0% { transform: translateX(-50%) translateY(0); }
+      50% { transform: translateX(-50%) translateY(-15px); }
+      100% { transform: translateX(-50%) translateY(0); }
+    }
+
+    .particle{
+      position:fixed;
+      pointer-events:none;
+      user-select:none;
+      will-change:transform,opacity;
+    }
+    .heart-explode{ animation: floatAway 1.6s forwards; font-size:28px; }
+    @keyframes floatAway{
+      0%{ transform:translate(0,0) scale(1); opacity:1 }
+      100%{ transform:translate(var(--dx), var(--dy)) scale(1.35); opacity:0 }
+    }
+
+    footer{
+      position:fixed; bottom:12px; left:0; right:0; text-align:center; z-index:999; }
+    #footer-img{ width:100px; cursor:pointer; margin-bottom:6px; }
+    #footer-text{ font-size:18px; }
+  </style>
+</head>
+<body>
+
+  <main class="stage">
+    <img id="coracao" class="layer" data-depth="0.03" src="https://xatimg.com/image/x7tXYb6LBCnf.png" alt="coração">
+    <img id="urso" class="layer" data-depth="0.06" src="https://xatimg.com/image/owCIXCsiWbea.png" alt="urso">
+    <div id="nome" class="layer" data-depth="0.09">Thay</div>
+    <div id="id">270181</div>
+  </main>
+
+  <footer>
+    <img id="footer-img" src="https://xatimg.com/image/uCfRLRcsKEBC.png" alt="rodapé">
+    <div id="footer-text">Feito com ❤️ Zayron - 2025</div>
+  </footer>
+
+  <script>
+    // Parallax inverso
+    const layers = document.querySelectorAll('.layer[data-depth]');
+    window.addEventListener('mousemove', e=>{
+      const cx = window.innerWidth/2, cy = window.innerHeight/2;
+      const mouseX = e.clientX, mouseY = e.clientY;
+      layers.forEach(layer=>{
+        const depth = parseFloat(layer.dataset.depth);
+        const x = (cx - mouseX) * depth;
+        const y = (cy - mouseY) * depth;
+        if(layer.id !== 'nome'){ // preserva animação floaty do nome
+          layer.style.transform = `translate(calc(-50% + ${x}px), calc(-50% + ${y}px))`;
+        }
+      });
+    });
+
+    // Efeito ID: corações em toda tela
+    const idEl = document.getElementById('id');
+    idEl.addEventListener('mouseenter',()=>{
+      for(let i=0;i<50;i++){
+        const h=document.createElement('div');
+        h.className='particle heart-explode';
+        h.textContent='❤️';
+        h.style.left=(Math.random()*window.innerWidth)+'px';
+        h.style.top=(Math.random()*window.innerHeight)+'px';
+        h.style.setProperty('--dx',(Math.random()*200-100)+'px');
+        h.style.setProperty('--dy',-(100+Math.random()*200)+'px');
+        document.body.appendChild(h);
+        setTimeout(()=>h.remove(),1600);
+      }
+    });
+
+    // Explosão de corações ao clicar no rodapé
+    document.getElementById('footer-img').addEventListener('click',e=>{
+      for(let i=0;i<25;i++){
+        const h=document.createElement('div');
+        h.className='particle heart-explode';
+        h.textContent='❤️';
+        h.style.left=(e.clientX+Math.random()*100-50)+'px';
+        h.style.top=(e.clientY+Math.random()*60-30)+'px';
+        h.style.setProperty('--dx',(Math.random()*240-120)+'px');
+        h.style.setProperty('--dy',-(150+Math.random()*120)+'px');
+        document.body.appendChild(h);
+        setTimeout(()=>h.remove(),1600);
+      }
+    });
+  </script>
+</body>
+</html>
